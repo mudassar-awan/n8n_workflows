@@ -1,0 +1,263 @@
+{
+  "name": "Agentic workflow using supabase",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        288
+      ],
+      "id": "158b312b-fbe0-43f7-aa7b-06795c59e3df",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1AZs7c9fib12I3dTNBq6dye4-tLjwxbKm",
+          "mode": "list",
+          "cachedResultName": "599157-teacher-guidance-for-examination-from-2023-.pdf",
+          "cachedResultUrl": "https://drive.google.com/file/d/1AZs7c9fib12I3dTNBq6dye4-tLjwxbKm/view?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -528,
+        352
+      ],
+      "id": "b957f153-3904-4321-8868-5ecd6adff9ff",
+      "name": "Download file"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -352,
+        144
+      ],
+      "id": "ca3fc617-78dc-45c9-88d6-e210e6b875d2",
+      "name": "Supabase Vector Store"
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        -144,
+        400
+      ],
+      "id": "a70a360f-905f-4789-8f3c-abf0c8096391",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -336,
+        400
+      ],
+      "id": "980445ef-d765-4ad5-a9f0-0b57d6bc9fed",
+      "name": "Embeddings Google Gemini"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        16
+      ],
+      "id": "3393bff7-36c0-4e72-8363-30678836fe88",
+      "name": "When chat message received",
+      "webhookId": "843536cf-cfe7-42de-9411-055e4d5ef744"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        192,
+        -16
+      ],
+      "id": "3f65857c-f3dc-49ed-aaaf-62868c937ec6",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        80,
+        224
+      ],
+      "id": "dc3d4ca0-038d-437e-b4b9-9df7a6f3db00",
+      "name": "Google Gemini Chat Model"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "reterive answers for query from chat input",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "topK": 2,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        416,
+        160
+      ],
+      "id": "d93663c0-e6c6-49eb-96f0-a4dc2e6e39da",
+      "name": "Supabase Vector Store1"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        192,
+        272
+      ],
+      "id": "9ca16803-629d-4153-97ea-1a7e8c4936aa",
+      "name": "Postgres Chat Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Supabase Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "847f8f1c-daf7-4fea-a58c-7a74754c8e42",
+  "meta": {
+    "instanceId": "b9ab7cdf6127af61540795f9c60ceaa71a3a2baada2f5159b1b0c1f952348b06"
+  },
+  "id": "Udzizpr3dkW9rx3s",
+  "tags": []
+}
