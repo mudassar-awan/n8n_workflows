@@ -34,13 +34,7 @@
         0
       ],
       "id": "7726b2b3-f3d0-4c1e-8413-40e16871cc1a",
-      "name": "Get a DONKI solar flare",
-      "credentials": {
-        "nasaApi": {
-          "id": "mg3Q9L0Fa7idDkA8",
-          "name": "NASA account"
-        }
-      }
+      "name": "Get a DONKI solar flare"
     },
     {
       "parameters": {
@@ -79,7 +73,6 @@
       "parameters": {
         "resource": "request",
         "operation": "send",
-        "binId": "1758911277742-9613532086368",
         "binContent": "=There was a solar flare of class {{$json[\"classType\"]}}",
         "requestOptions": {}
       },
@@ -96,7 +89,6 @@
       "parameters": {
         "resource": "request",
         "operation": "send",
-        "binId": "1758911277742-9613532086368",
         "binContent": "=this is the message for flare class{{ $json[\"classType\"] }}",
         "requestOptions": {}
       },
@@ -158,10 +150,6 @@
     "executionOrder": "v1"
   },
   "versionId": "4037972b-3b7e-4bbf-a657-dca50b185ce7",
-  "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "aaa9646a225dd4dfac98a4e8e80c56a96bd55de1912c5ac2e21c82d473620c7a"
-  },
   "id": "H24D0hKZjUBlHyz4",
   "tags": []
 }
