@@ -1,8 +1,9 @@
-# Agentic Workflow using Supabase
+# Rag (Reterival Augumented Generation )Agentic Workflow using Supabase
 
 **Description:**  
 This project implements an **agentic AI workflow** using **Supabase** and **n8n**.  
 It allows automated document ingestion, embedding generation, and intelligent retrieval-augmented chat using **Google Gemini** models.
+<img width="1222" height="580" alt="image" src="https://github.com/user-attachments/assets/13d164b5-3aac-4acb-aa58-7a1d539d51c2" />
 
 Each uploaded document (like PDF or text) is automatically:
 1. Converted into embeddings using **Google Gemini Embeddings**.
