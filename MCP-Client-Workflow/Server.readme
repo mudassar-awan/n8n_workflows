@@ -1,0 +1,56 @@
+# 🚦 MCP Server Workflow (n8n)
+
+This file contains the **MCP Server Workflow** (n8n export).  
+It implements a lightweight MCP server endpoint that accepts MCP-triggered requests and can invoke connected tools (example: a Hacker News tool) to perform actions and return results. :contentReference[oaicite:0]{index=0}
+
+---
+
+
+## 📌 Quick summary
+
+- **Name:** MCP Server Workflow  
+- **Platform:** n8n (JSON export included: `MCP Server Workflow.json`)  
+- **Purpose:** Provide an HTTP webhook (MCP trigger) that accepts incoming MCP client calls and runs internal tool nodes (e.g., fetch many Hacker News items) as part of the server-side handling logic. :contentReference[oaicite:1]{index=1}
+
+---
+
+## 🔍 What the MCP Server does
+
+- Exposes a webhook path which acts as the MCP server endpoint.  
+- Receives structured MCP requests (JSON) from MCP clients.  
+- Routes the request into the n8n workflow via the **MCP Server Trigger** node.  
+- Invokes connected tool nodes (example: `Get many items in Hacker News`) to fulfill the requested action.  
+- Returns the tool results (or error) as the MCP server response to the caller. :contentReference[oaicite:2]{index=2}
+
+---
+
+## ⚙️ How it works (step-by-step)
+
+1. **Incoming request → Webhook**  
+   A client POSTs to the configured webhook path (the `MCP Server Trigger` node). The JSON payload becomes the trigger input. :contentReference[oaicite:3]{index=3}
+
+2. **Trigger dispatch**  
+   The `MCP Server Trigger` receives the payload and passes the data into the workflow as the entry event. :contentReference[oaicite:4]{index=4}
+
+3. **Tool invocation**  
+   Connected nodes (registered as `ai_tool` in the workflow) are invoked. In this example, the workflow runs the `Get many items in Hacker News` tool node which queries Hacker News and returns up to the configured `limit`. :contentReference[oaicite:5]{index=5}
+
+4. **Compose response**  
+   The workflow composes a JSON response from the tool output (status, result, meta) and returns it to the original HTTP caller.
+
+5. **Error handling**  
+   If a tool fails, the workflow should return a structured error object describing the failure so the client can retry or fallback.
+
+---
+
+## 🧩 Workflow nodes (from the exported file)
+
+- **MCP Server Trigger** (`@n8n/n8n-nodes-langchain.mcpTrigger`)  
+  - `webhookId` / `path` present in the JSON (`ec6c5bfe-9148-434d-9c27-76abdf37137f`). Acts as the public endpoint for MCP clients. :contentReference[oaicite:6]{index=6}
+
+- **Get many items in Hacker News** (`n8n-nodes-base.hackerNewsTool`)  
+  - Example tool node connected to the trigger as an `ai_tool`. Configured with `resource: all` and `limit: 20` in the exported workflow. Use this as a placeholder for real MCP operations. :contentReference[oaicite:7]{index=7}
+
+---
+
+#
