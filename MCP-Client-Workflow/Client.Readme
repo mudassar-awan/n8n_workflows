@@ -1,0 +1,45 @@
+# 🌐 MCP Client Workflow (n8n)
+
+This repository contains the **MCP Client Workflow** exported from **n8n**.  
+It wires a chat trigger → AI Agent (Google Gemini) → memory → **MCP Client** tool to enable the agent to call an external MCP server for actions, data, or orchestration.
+
+---
+
+## 🚀 Quick Summary
+
+- **Platform:** n8n (workflow JSON included: `MCP Client&Server Workflow.json`)  
+- **Purpose:** Run an AI-driven chat agent that can call an external MCP server to perform side effects, fetch data, or orchestrate workflows outside n8n.
+
+---
+
+## 🔍 What the *MCP Client* DOES
+
+The **MCP Client** node is an `ai_tool` inside the agent that:
+
+- **Sends structured requests** (JSON) to an external MCP server endpoint when the agent decides it needs to use an external capability.
+- **Receives responses** from the MCP server and returns those results to the agent for final response generation.
+- **Acts as a bridge** for operations that should run outside n8n (e.g., triggering remote jobs, publishing events, querying protected services, interfacing with system-of-records).
+- **Supports** sending metadata (agent context, message id, user id) so the MCP server can process requests in context.
+- **Handles** basic error responses and passes failure info back to the agent (so you can implement retries, fallbacks, or informative user messages).
+
+---
+
+## ⚙️ How the *MCP Client* WORKS (Step-by-Step)
+
+1. **Agent Decision**  
+   The AI Agent (Google Gemini) analyzes the incoming chat message and decides whether to call an external tool to complete the task (for example: fetch account info, trigger a build, or call a microservice).
+
+2. **Tool Invocation**  
+   When the agent chooses the MCP Client, it builds a **request payload** (usually JSON) containing:
+   - `action` (what the agent wants the MCP server to do)
+   - `input` (parameters / user message / context)
+   - `context` (conversation id, user id, short memory snippet)
+   - optional `auth` token or reference to stored credential
+
+   Example payload:
+   ```json
+   {
+     "action": "get_user_profile",
+     "input": { "userId": "user-123" },
+     "context": { "conversationId": "conv-456", "lastMessages": ["..."] }
+   }
