@@ -3,6 +3,7 @@
 **Description:**  
 This workflow enables **AI-powered WhatsApp conversations** using **n8n**, **Google Gemini**, and the **WhatsApp Business API**.  
 It listens for incoming WhatsApp messages, sends them to a Google Gemini language model for intelligent processing, and replies back automatically with a smart, contextual response.
+<img width="1215" height="562" alt="image" src="https://github.com/user-attachments/assets/1e8eb26a-a626-4c3e-b181-e8cd3f70cb2f" />
 
 ---
 
