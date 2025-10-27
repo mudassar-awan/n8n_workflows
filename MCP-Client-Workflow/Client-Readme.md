@@ -4,6 +4,7 @@ This repository contains the **MCP Client Workflow** exported from **n8n**.
 It wires a chat trigger → AI Agent (Google Gemini) → memory → **MCP Client** tool to enable the agent to call an external MCP server for actions, data, or orchestration.
 
 ---
+<img width="1032" height="527" alt="image" src="https://github.com/user-attachments/assets/53f73996-979b-40f4-a0e5-80d49ab8b89d" />
 
 ## 🚀 Quick Summary
 
