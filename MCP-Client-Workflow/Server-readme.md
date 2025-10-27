@@ -4,6 +4,8 @@ This file contains the **MCP Server Workflow** (n8n export).
 It implements a lightweight MCP server endpoint that accepts MCP-triggered requests and can invoke connected tools (example: a Hacker News tool) to perform actions and return results. :contentReference[oaicite:0]{index=0}
 
 ---
+<img width="772" height="530" alt="image" src="https://github.com/user-attachments/assets/0e2c2d27-6228-47b2-8d3d-e65c6fae853c" />
+
 
 
 ## 📌 Quick summary
