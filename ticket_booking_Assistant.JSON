@@ -1,0 +1,1089 @@
+{
+  "name": "Faisal_Movers_Transport_Booking_Assistant",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1456,
+        1584
+      ],
+      "id": "8cc0e879-fc1f-4a6b-ab57-0bca63688ba9",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1RCnjhlx4Xe3SvnXO5Gt6QzeOSoy-AFOr",
+          "mode": "list",
+          "cachedResultName": "Updated_Faisal-Movers transport data.csv",
+          "cachedResultUrl": "https://drive.google.com/file/d/1RCnjhlx4Xe3SvnXO5Gt6QzeOSoy-AFOr/view?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -992,
+        1552
+      ],
+      "id": "3fb1a26c-331f-40d3-b550-d46cf0cda6a2",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "E9PjFjLa8LAfld5M",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "faisalmovers",
+          "mode": "list",
+          "cachedResultName": "faisalmovers"
+        },
+        "options": {
+          "queryName": "match_faisalmovers"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -496,
+        1360
+      ],
+      "id": "eda9b6d4-1f08-4931-935a-2fe35526229b",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "3s6dFD97CdUpQRhe",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        -368,
+        1584
+      ],
+      "id": "38c32d63-5e3b-4aa9-94a5-e7648ad02b6e",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "public": true,
+        "mode": "webhook",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -1424,
+        960
+      ],
+      "id": "dfead180-1e6a-471a-b836-609b7e8c1d21",
+      "name": "When chat message received",
+      "webhookId": "f2d49109-9b64-4fcf-a86b-91001a6a2a7f"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "This vector store contains official Faisal Movers information including:\n- routes, source and destination cities\n- fares for each route and bus class\n- bus classes and amenities\n- terminals, departure points, and timings\n- general company information related to bus transport\n\nThe Agent must use this vector store to answer any Faisal Movers–related questions.\n\nIf the user asks about fares, routes, timings, class availability, or amenities,\nthe answer must come strictly from this dataset.\n\nIf the requested information is not found in this dataset,\nthe AI must respond with:\n\"Sorry, I can only answer queries related to Faisal Movers bus service.\"\n\n",
+        "tableName": {
+          "__rl": true,
+          "value": "faisalmovers",
+          "mode": "list",
+          "cachedResultName": "faisalmovers"
+        },
+        "options": {
+          "queryName": "match_faisalmovers"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -624,
+        1200
+      ],
+      "id": "8e6f9009-8ff8-4e53-87d6-e4737dfcef4e",
+      "name": "Supabase Vector Store1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "3s6dFD97CdUpQRhe",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": "faisalmovers_chat_histories",
+        "contextWindowLength": 4
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -1024,
+        1104
+      ],
+      "id": "0849bccf-6e12-4e9d-9955-a7617d897134",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "qeae0uFjT3A2RiPY",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "webhook_bus_payment_123",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        1728
+      ],
+      "id": "adec6aad-a518-4f17-8eb6-ef0f59c022cf",
+      "name": "Webhook",
+      "webhookId": "40a2c6b8-787b-493b-93e7-73b303686df6"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8d392fdf-1787-4cd0-bbf2-8b40e7cbafae",
+              "leftValue": "={{ $json.v1 }}",
+              "rightValue": "={{ $json.computedSignature }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "782d4bad-4f32-4950-88fc-59829a77eb1f",
+              "leftValue": "={{ $('Webhook').item.json.body.type }}",
+              "rightValue": "checkout.session.completed",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "f24fb433-5716-4254-883c-9f12570278b9",
+              "leftValue": "={{ ($now/1000) - $json.t }}",
+              "rightValue": "={{ 180 // This is in seconds }}",
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1712,
+        1728
+      ],
+      "id": "07c3cf54-0c94-4976-bd97-4038c589fb74",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": "const signatureHeader = $input.first().json.headers[\"stripe-signature\"]\n// Split the header by comma\nconst parts = signatureHeader.split(',');\n\n// Build the object by splitting each part at the first '='\nconst result = {};\nfor (const part of parts) {\n  const [key, value] = part.split('=', 2);\n  result[key] = value;\n}\n\n// Output the object for use in your workflow\nreturn [{ json: result }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1264,
+        1728
+      ],
+      "id": "a20ba4fa-7b40-406f-89fd-7897c8098fc6",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "action": "hmac",
+        "type": "SHA256",
+        "value": "={{ $json.t }}.{{ JSON.stringify($('Webhook').item.json.body, null, 2) }}",
+        "dataPropertyName": "computedSignature",
+        "secret": "=whsec_sE9fkfacUZctW0pXLwy5RT1NMrzrdDyE"
+      },
+      "type": "n8n-nodes-base.crypto",
+      "typeVersion": 1,
+      "position": [
+        1488,
+        1728
+      ],
+      "id": "c1f4d6bc-c66b-4b76-acb1-97fdf25285c9",
+      "name": "Crypto1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f7b3f0b7-859a-4cae-ba86-cd95de754a54",
+              "name": "Customer_Email",
+              "value": "={{ $('Webhook').item.json.body.data.object.customer_details.email }}",
+              "type": "string"
+            },
+            {
+              "id": "c787fa4d-5d52-4f1d-8649-0cb0a555e821",
+              "name": "Customer_Name",
+              "value": "={{ $('Webhook').item.json.body.data.object.customer_details.name }}",
+              "type": "string"
+            },
+            {
+              "id": "7ef79ae1-2a06-4065-8836-20aeb0e98fd3",
+              "name": "Ticket_Fare_PKR",
+              "value": "={{ $('Webhook').item.json.body.data.object.amount_total / 100 }}",
+              "type": "string"
+            },
+            {
+              "id": "df9e9db2-335d-452b-8510-661a87e70a34",
+              "name": "Booking_ID",
+              "value": "={{ $('Webhook').item.json.body.data.object.client_reference_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1952,
+        1440
+      ],
+      "id": "8bfc0650-33d2-40ed-b84f-50f60119b247",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "errorMessage": "Signature verification failed"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1936,
+        1824
+      ],
+      "id": "1a4df88d-4a8c-4b48-a849-c655e2bb26ed",
+      "name": "Stop and Error1"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Customer_Email }}",
+        "subject": "=={{ 'Faisal Movers E-Ticket: Booking ID ' + $json.Booking_ID }}",
+        "message": "=<!DOCTYPE html>\n<html>\n<head>\n    <title>Faisal Movers E-Ticket Confirmation</title>\n    <style>\n        body { font-family: Tahoma, Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; }\n        .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }\n        .header { background-color: #2c3e50; color: #ffffff; padding: 15px; text-align: center; border-radius: 6px 6px 0 0; }\n        .details { margin-top: 20px; border: 1px solid #ddd; border-radius: 4px; padding: 15px; }\n        .detail-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dotted #eee; }\n        .detail-row:last-child { border-bottom: none; }\n        .label { font-weight: bold; color: #555; }\n        .value { color: #333; }\n        .footer { text-align: center; margin-top: 30px; font-size: 0.8em; color: #777; }\n        .important { color: #e74c3c; font-weight: bold; }\n    </style>\n</head>\n<body>\n    <div class='container'>\n        <div class='header'>\n            <h2>Faisal Movers - Booking Confirmed</h2>\n            <h3>E-Ticket Receipt</h3>\n        </div>\n\n        <!-- Greeting -->\n        <p>Dear {{ $json.Customer_Name }},</p>\n        <p>Thank you for choosing Faisal Movers. Your payment has been successfully verified, and your e-ticket is confirmed!</p>\n\n        <!-- Customer booking details -->\n        <div class='details'>\n            <div class='detail-row'>\n                <span class='label'>Booking ID:</span>\n                <span class='value important'>{{ $json.Booking_ID }}</span>\n            </div>\n            <div class='detail-row'>\n                <span class='label'>Amount Paid:</span>\n                <span class='value'>PKR {{ $json.Ticket_Fare_PKR }}</span>\n            </div>\n            <div class='detail-row'>\n                <span class='label'>Email:</span>\n                <span class='value'>{{ $json.Customer_Email }}</span>\n            </div>\n        </div>\n\n        <!-- Footer -->\n        <p class='footer'>Please present this Booking ID upon boarding. For support, contact Faisal Movers customer care.</p>\n    </div>\n</body>\n</html>\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2208,
+        1520
+      ],
+      "id": "e956f454-f576-4da7-8c10-ff37c9532d09",
+      "name": "Send a message1",
+      "webhookId": "91d37315-2190-474e-8b6f-4fbe9eaf8fac",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0CKQRXWk4OVSHSoJ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are the Ticket Assistant for Faisal Movers.\n\nIMPORTANT DATA RULES:\n- You do NOT know fares, routes, timings, or terminals by yourself.\nIMPORTANT:\n*For each queries always check and find the answer in google sheet node .*\n- All factual data comes ONLY from the Agent tool node  (Google Sheets).\n- If no data is provided to you, you MUST say:\n  \"Sorry, I can only answer queries related to Faisal Movers bus service.\"\n\nGENERAL CHAT:\n- You may reply to greetings like \"hi\" or \"hello\" politely.\n\nBOOKING MODE:\nBooking starts when the user mentions booking, traveling, seats, date, or route.\n\nRequired fields:\nIMPROTANT* Collect these all field according to the provided sequence, first name and then other fields\n- name\n- source_city\n- destination_city\n- bus_class(Available bus classes are Standard,Executive,Super Executive, and Luxury Plus)\n- seat_quantity\n- date\n\nAsk for missing fields ONE BY ONE.\nDon't repeat the same questions multiple times.\nDo not assume or guess any value.\n\nCONFIRMATION:\nWhen all fields are collected, ask:\n\n\"Please confirm:\nName: {name}\nFrom: {source_city}\nTo: {destination_city}\nClass: {bus_class}\nSeats: {seat_quantity}\nDate: {date}\nShould I proceed?\"\n\nFINAL OUTPUT RULE:\n- ONLY output JSON when user confirms.\n- Output NOTHING outside JSON.\n\nJSON FORMAT:\n{\n  \"intent\": \"book_ticket\",\n  \"name\": \"USER_NAME\",\n  \"source_city\": \"CITY_A\",\n  \"destination_city\": \"CITY_B\",\n  \"bus_class\": \"CLASS\",\n  \"seat_quantity\": NUMBER,\n  \"date\": \"YYYY-MM-DD\"\n}\n\nSTRICT RULES:\n- Never invent data.\n- Never guess fares, routes, or timings.\n- Never use embeddings or vector search.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -1040,
+        752
+      ],
+      "id": "7c13a903-9952-484a-88b1-9183070d1f90",
+      "name": "AI Agent",
+      "notesInFlow": false,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "6d89a6b0-e9fa-46fb-bbb7-5e9c0d27af02",
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "={{\"check_info\" }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "4429a3a5-cad7-4d34-bc78-ccf30587f359",
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "={{\"book_ticket\" }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "1078c2a9-7dd6-4149-a1e4-5fd732e6e5d0",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "={{ $json.message }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -96,
+        960
+      ],
+      "id": "f01df386-81bc-4cbd-b156-b318f64f07dc",
+      "name": "Switch",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Current item\nconst item = $json;\n\n// Calculate total fare\nconst totalFare = item.fare_price_pkr * item.seat_quantity;\n\n// Return a single object\nreturn {\n  json: {\n    totalFare: totalFare,\n    name: item.name,\n    source: item.source_city,\n    destination: item.destination_city,\n    busClass: item.bus_class,\n    seats: item.seat_quantity,\n    date: item.date\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        576,
+        960
+      ],
+      "id": "a8caf683-78c0-4414-8f23-970bf41c3779",
+      "name": "Fare_Calculation",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "fares_prices",
+        "limit": 1,
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "source_city",
+              "condition": "eq",
+              "keyValue": "={{ $json.source_city }}"
+            },
+            {
+              "keyName": "destination_city",
+              "condition": "eq",
+              "keyValue": "={{$json[\"destination_city\"].trim()}}"
+            },
+            {
+              "keyName": "bus_class",
+              "condition": "eq",
+              "keyValue": "={{$json[\"bus_class\"].trim()}}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        144,
+        1168
+      ],
+      "id": "0c5ab9e2-a5d0-469d-9ff4-4baeca019584",
+      "name": "fetching _fare_prices_along_cities",
+      "alwaysOutputData": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "3s6dFD97CdUpQRhe",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.stripe.com/v1/checkout/sessions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer sk_test_51SYA76RWOrB4gn94pHQzFD6dXoGy1KrxNuTIWiGxquByWICjWUocYx4nwBB9wt5Qzs2xjtNwosujVmuXkK9PiTDL00KYFpEMln"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "payment_method_types[0]",
+              "value": "card"
+            },
+            {
+              "name": "mode",
+              "value": "payment"
+            },
+            {
+              "name": "line_items[0][price_data][currency]",
+              "value": "PKR"
+            },
+            {
+              "name": "line_items[0][price_data][product_data][name]",
+              "value": "Bus Ticket"
+            },
+            {
+              "name": "=line_items[0][price_data][unit_amount]",
+              "value": "={{ $json.totalFare * 100 }}"
+            },
+            {
+              "name": "line_items[0][quantity]",
+              "value": "1"
+            },
+            {
+              "name": "success_url",
+              "value": "https://example.com/success"
+            },
+            {
+              "name": "cancel_url",
+              "value": "https://example.com/cancel"
+            },
+            {
+              "name": "client_reference_id",
+              "value": "={{ $json.name }}_{{ $now.toFormat('yyyyMMddHHmmss') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        816,
+        944
+      ],
+      "id": "1e6dd6c3-a343-47c0-9189-ddcff6f61a36",
+      "name": "Stripe "
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const raw = $json.output || $json.message || \"\";\n\n// Try to extract JSON block from the text\nconst jsonMatch = raw.match(/\\{[\\s\\S]*\\}/);\n\nif (jsonMatch) {\n    try {\n        const extracted = jsonMatch[0]; // only the JSON part\n        const parsed = JSON.parse(extracted);\n        return parsed; // goes to Switch Node\n    } catch (err) {\n        // JSON exists but is invalid\n        return {\n            error: \"Failed to parse JSON\",\n            raw_text: raw\n        };\n    }\n} else {\n    // No JSON found → treat as general message\n    return {\n        message: raw,\n        intent: \"check_info\"\n    };\n}\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -480,
+        880
+      ],
+      "id": "96795f2c-79a5-4e7a-9270-12a2e744bf0a",
+      "name": "JSON-OUTPUT"
+    },
+    {
+      "parameters": {
+        "options": {
+          "topK": 8
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1872,
+        928
+      ],
+      "id": "3a63940a-69a4-4c9e-ac70-bd136c3529f9",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "kKXZo6TMMhQmtBVN",
+          "name": "Google Gemini(PaLM) Api account 9"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        1488
+      ],
+      "id": "8713c17f-97d1-44b3-b491-3115813ec05c",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "jFt0FgQUaT4hIj4h",
+          "name": "Google Gemini(PaLM) Api account 10"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        352,
+        912
+      ],
+      "id": "5ec45c6f-e7ae-47f9-be6c-ea446ff8a187",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -928,
+        1344
+      ],
+      "id": "26100572-84d4-4f42-af3d-fbac6dd6ca06",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "lOu1qxwgYwE0mLXK",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -1296,
+        1280
+      ],
+      "id": "2a7d4877-5a82-43bc-b57c-38b048f04194",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "lOu1qxwgYwE0mLXK",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "long_url",
+              "value": "={{ $json.url }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4748814b-812a-4702-943c-e320cf5324f4",
+      "name": "Set Long URL",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        1056,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "requestMethod": "POST",
+        "url": "https://api.short.io/links",
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "={\n  \"originalURL\": \"{{ $json.long_url }}\",\n  \"domain\": \"Aimlteam39.short.gy\"\n}",
+        "headerParametersJson": "{\n  \"Authorization\": \"sk_OlSsaz6aWVliFGZ0\",\n  \"Content-Type\": \"application/json\"\n}"
+      },
+      "id": "71358fc8-5f2c-4ccc-8ab2-703c32bc76db",
+      "name": "Short.io API Call",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [
+        1312,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "96577cc4-6f1b-4e61-94c0-46951836ee37",
+              "name": "message",
+              "value": "=\nGood luck {{ $('Fare_Calculation').item.json.name }}* Your booking has been confirmed.\nTotal payable amount  is {{ $('Fare_Calculation').item.json.totalFare }} PKR\nUse this link for payment. This link only works for 5 minutes.\n{{ $json.shortURL }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1504,
+        912
+      ],
+      "id": "a3561b5d-16a6-45ea-8a83-04c87638e2e1",
+      "name": "Set_Node"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Use this tool to answer queries asked to Ai Agent , use this tool to answer the all queries , if the answer is not found in this tool than simply say soory and message should be i can only ansswer about the fasial movers",
+        "documentId": {
+          "__rl": true,
+          "value": "159WpG5CbhPv6J-ZAA2kK_F11e3Nij5rg6nKn8F9V1Ys",
+          "mode": "list",
+          "cachedResultName": "Updated_Faisal_Movers_Transport_Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/159WpG5CbhPv6J-ZAA2kK_F11e3Nij5rg6nKn8F9V1Ys/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 220279703,
+          "mode": "list",
+          "cachedResultName": "Faisal-Movers transport data11",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/159WpG5CbhPv6J-ZAA2kK_F11e3Nij5rg6nKn8F9V1Ys/edit#gid=220279703"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        -816,
+        1040
+      ],
+      "id": "4b43b034-799b-4e4b-bc6f-438676112a46",
+      "name": "Google Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "jYFbwkdskapYlh7Q",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code Node (JavaScript)\ntry {\n    if (!items || items.length === 0) {\n        throw new Error(\"No input items found\");\n    }\n\n    const data = items[0].json;\n\n    // Extract fields safely\n    const customerName = data.Customer_Name || \"Customer\";\n    const customerEmail = data.Customer_Email || \"your email\";\n    const fare = data.Ticket_Fare_PKR || \"N/A\";\n    const bookingId = data.Booking_ID || \"N/A\";\n\n    // Build dynamic confirmation message\n    const confirmationMessage =\n        `✅ Payment Verified Successfully!\\n\\n` +\n        `Thank you ${customerName}, your payment has been verified.\\n\\n` +\n        `📄 Booking ID: ${bookingId}\\n` +\n        `💰 Amount Paid: PKR ${fare}\\n\\n` +\n        `📧 A digital receipt has been sent to ${customerEmail}.\\n` +\n        `Please check your inbox (and spam folder if needed).\\n\\n` +\n        `If you need further assistance, feel free to ask.`;\n\n    // Return status + message for Switch routing\n    return [\n        {\n            json: {\n                status: \"payment_verified\",\n                message: confirmationMessage\n            }\n        }\n    ];\n} catch (error) {\n    throw new Error(`Code node error: ${error.message}`);\n}\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        944,
+        1312
+      ],
+      "id": "3ade7ccb-7908-4871-ad9e-4f2a5eee729e",
+      "name": "Code in JavaScript",
+      "disabled": true
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store1": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Crypto1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crypto1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "JSON-OUTPUT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [],
+        [
+          {
+            "node": "fetching _fare_prices_along_cities",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Fare_Calculation": {
+      "main": [
+        [
+          {
+            "node": "Stripe ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fetching _fare_prices_along_cities": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stripe ": {
+      "main": [
+        [
+          {
+            "node": "Set Long URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JSON-OUTPUT": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        []
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Fare_Calculation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        []
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Supabase Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Long URL": {
+      "main": [
+        [
+          {
+            "node": "Short.io API Call",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Short.io API Call": {
+      "main": [
+        [
+          {
+            "node": "Set_Node",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheet": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set_Node": {
+      "main": [
+        []
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f4e37731-5f2a-4a2d-aa03-ea464da7b74e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9f2651917241b38624757ef05af4eccbb46e9cb9481e4d0d3d4c5bca4db84a38"
+  },
+  "id": "4YRoSkwScqykSsXn",
+  "tags": []
+}
